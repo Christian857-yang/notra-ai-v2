@@ -1,12 +1,11 @@
 import { NextResponse } from 'next/server';
 import OpenAI from 'openai';
 
-// ✅ 读取环境变量
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-export const runtime = 'edge'; // 🚀 更快响应
+export const runtime = 'edge';
 
 export async function POST(req: Request) {
   try {
@@ -20,7 +19,6 @@ export async function POST(req: Request) {
       throw new Error('请求格式错误，缺少 messages 数组');
     }
 
-    // ✅ 使用 GPT-4o 模型
     const response = await openai.chat.completions.create({
       model: 'gpt-4o',
       messages,
@@ -28,7 +26,6 @@ export async function POST(req: Request) {
       stream: true,
     });
 
-    // ✅ 流式输出
     const encoder = new TextEncoder();
     const stream = new ReadableStream({
       async start(controller) {
@@ -41,9 +38,7 @@ export async function POST(req: Request) {
     });
 
     return new Response(stream, {
-      headers: {
-        'Content-Type': 'text/plain; charset=utf-8',
-      },
+      headers: { 'Content-Type': 'text/plain; charset=utf-8' },
     });
   } catch (err: any) {
     console.error('❌ API Error:', err);
